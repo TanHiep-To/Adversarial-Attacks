@@ -4,3 +4,4 @@ keras
 tensorflow
 pillow
 matplotlib
+textattack
