@@ -34,6 +34,9 @@ python model.py
 You can download pretrained model hear [link](https://www.kaggle.com/code/tuanphong27/mhudung/output) and put it in folder run.
 
 
-
-
+### Attack
+```
+cd textfoolter
+python attack.py
+```
 
