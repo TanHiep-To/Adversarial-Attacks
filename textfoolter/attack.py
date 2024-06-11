@@ -14,6 +14,8 @@ from textattack.attack_recipes import TextFoolerJin2019
 from textattack.models.wrappers import HuggingFaceModelWrapper
 import pickle
 from textattack.attack_results import SuccessfulAttackResult
+import os
+
 
 print('Downloading NLTK resources...\n\n')
 nltk.download('stopwords')
@@ -22,9 +24,9 @@ nltk.download('universal_tagset')
 
 
 tokenizer = load_tokenizer()
-# Select a subset of the test set for generating adversarial examples
+# Select a sub of the test set for generating adversarial examples
 print('Downloading and preprocessing the dataset...\n\n')
-_,test_df = DatasetClassify('../data/').download()
+_,test_df = DatasetClassify('./data/').download()
 sub_test_df = test_df.sample(n=100, random_state=42)
 sub_test_encodings = tokenizer(sub_test_df['text'].tolist(), truncation=True, padding=True, max_length=256)
 sub_test_labels = sub_test_df['label'].values - 1
@@ -47,8 +49,8 @@ print('Generating adversarial examples...\n\n')
 
 adversarial_examples = []
 for i in range(len(sub_test_dataset_custom)):
+    print('Generate adversarial example', i)
     original_text, ground_truth_label = sub_test_dataset_custom[i]
-    print(f"Processing example {i+1}...")
     attack_result = attack.attack(original_text, ground_truth_label)
     adversarial_examples.append(attack_result)
 
@@ -60,7 +62,7 @@ with open('../output/adversarial_examples.pkl', 'wb') as f:
     pickle.dump(adversarial_examples, f)
 
 # Load the  adversarial examples
-with open('../output/adversarial_examples.pkl', 'rb') as f:
+with open('./output/adversarial_examples.pkl', 'rb') as f:
     adversarial_examples = pickle.load(f)
 
 def compute_accuracy(model, tokenizer, dataset):
@@ -82,10 +84,12 @@ def compute_accuracy(model, tokenizer, dataset):
     return correct_count / total_count
 
 # Evaluate the model's performance on the original test set
-original_accuracy = compute_accuracy(model, tokenizer, subset_test_dataset_custom)
+original_accuracy = compute_accuracy(model, tokenizer, sub_test_dataset_custom)
 print("Original Accuracy: {:.2f}%".format(original_accuracy * 100))
 
 # Evaluate the model's performance on the adversarial examples
+successful_attacks = [example for example in adversarial_examples if isinstance(example, SuccessfulAttackResult)]
+adversarial_dataset = [(example.perturbed_text(), example.original_result.ground_truth_output) for example in successful_attacks]
 adversarial_accuracy = compute_accuracy(model, tokenizer, adversarial_dataset)
 print("Adversarial Accuracy: {:.2f}%".format(adversarial_accuracy * 100))
 
@@ -107,3 +111,16 @@ for i, attack_result in enumerate(successful_attacks[:num_examples]):
     print("Predicted Label (Adversarial):", attack_result.perturbed_result.output)
     print("-" * 80)
     print("\n")
+
+with open('../output/adversarial_examples.txt', 'w') as f:
+    for i, attack_result in enumerate(successful_attacks):  # assuming attack_results is a list of results
+        f.write(f"Example {i+1}:\n")
+        f.write("-" * 80 + "\n")
+        f.write("Original Text:\n")
+        f.write(attack_result.original_text() + "\n")
+        f.write("\nAdversarial Text:\n")
+        f.write(attack_result.perturbed_text() + "\n")
+        f.write("\nGround Truth Label: " + str(attack_result.original_result.ground_truth_output) + "\n")
+        f.write("Predicted Label (Original): " + str(attack_result.original_result.output) + "\n")
+        f.write("Predicted Label (Adversarial): " + str(attack_result.perturbed_result.output) + "\n")
+        f.write("-" * 80 + "\n\n")
