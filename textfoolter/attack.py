@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../')
+sys.path.append('./')
 import torch
 from model.Token import load_tokenizer
 from transformers import AutoModelForSequenceClassification
@@ -55,10 +55,10 @@ for i in range(len(sub_test_dataset_custom)):
     adversarial_examples.append(attack_result)
 
 # Save the adversarial examples
-if not os.path.exists('../output'):
-    os.makedirs('../output')
+if not os.path.exists('./output'):
+    os.makedirs('./output')
 
-with open('../output/adversarial_examples.pkl', 'wb') as f:
+with open('./output/adversarial_examples.pkl', 'wb') as f:
     pickle.dump(adversarial_examples, f)
 
 # Load the  adversarial examples
@@ -112,7 +112,7 @@ for i, attack_result in enumerate(successful_attacks[:num_examples]):
     print("-" * 80)
     print("\n")
 
-with open('../output/adversarial_examples.txt', 'w') as f:
+with open('./output/adversarial_examples.txt', 'w') as f:
     for i, attack_result in enumerate(successful_attacks):  # assuming attack_results is a list of results
         f.write(f"Example {i+1}:\n")
         f.write("-" * 80 + "\n")

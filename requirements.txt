@@ -7,4 +7,5 @@ pickle-mixin
 scipy==1.10.1
 tensorflow_hub
 torch
+torchvision
 transformers

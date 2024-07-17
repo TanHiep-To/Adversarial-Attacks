@@ -1,4 +1,4 @@
-
+# Question_Answering
 
 ## Instalation
 Firstly, you need to create a new venv
@@ -30,13 +30,10 @@ cd model
 python model.py
 ```
 
-### Pretrained Model
-You can download pretrained model hear [link](https://www.kaggle.com/code/tuanphong27/mhudung/output) and put it in folder run.
+
+<aside>
+🎯 An application Question - Answering
+</aside>
 
 
-### Attack
-```
-cd textfoolter
-python attack.py
-```
 

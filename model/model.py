@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../')
+sys.path.append('./')
 import torch
 import os
 from transformers import AutoModelForSequenceClassification
@@ -174,8 +174,8 @@ def main():
     
     
     # Save the trained model
-    if not os.path.exists('../run/weights/'):
-        os.makedirs('../run/weights/')
+    if not os.path.exists('./run/weights/'):
+        os.makedirs('./run/weights/')
         
     model.save_pretrained('./run/weights/')
 
